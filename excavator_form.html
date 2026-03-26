@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inspection Report - 油圧ショベル査定書</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Share+Tech+Mono&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --accent: #f5a623;
+    --text: #e8eaf0;
+    --text-muted: #7a7f9a;
+    --border: #2e3350;
+    --radius: 12px;
+    --A: #2ecc71;
+    --B: #3498db;
+    --C: #f39c12;
+    --D: #e74c3c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #1a1d27 0%, #0f1117 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 16px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .header-en {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 3px;
+  }
+
+  .header h1 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 2px;
+  }
+
+  .header-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .body {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* 基本情報 */
+  .info-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .info-grid.full { grid-template-columns: 1fr; }
+
+  .field-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 16px;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+
+  input:focus, textarea:focus { border-color: var(--accent); }
+  input::placeholder, textarea::placeholder { color: var(--text-muted); }
+  textarea { resize: vertical; min-height: 70px; }
+
+  /* セクション */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .section-header {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-icon { font-size: 16px; }
+
+  .section-title-en {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+  }
+
+  .section-title-jp {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .section-body {
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* ランク選択 */
+  .item-label {
+    font-size: 12px;
+    color: var(--text);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  .rank-row {
+    display: flex;
+    gap: 6px;
+  }
+
+  .rank-btn {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 9px 4px;
+    text-align: center;
+    transition: all 0.15s;
+  }
+
+  .rank-btn:active { transform: scale(0.95); }
+
+  .rank-btn.sel-A { background: rgba(46,204,113,0.15); border-color: var(--A); color: var(--A); }
+  .rank-btn.sel-B { background: rgba(52,152,219,0.15); border-color: var(--B); color: var(--B); }
+  .rank-btn.sel-C { background: rgba(243,156,18,0.15); border-color: var(--C); color: var(--C); }
+  .rank-btn.sel-D { background: rgba(231,76,60,0.15); border-color: var(--D); color: var(--D); }
+
+  .rank-legend {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+
+  .rank-legend span {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .rank-legend .la { color: var(--A); }
+  .rank-legend .lb { color: var(--B); }
+  .rank-legend .lc { color: var(--C); }
+  .rank-legend .ld { color: var(--D); }
+
+  .item-memo {
+    margin-top: 6px;
+  }
+
+  .item-memo input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    padding: 7px 10px;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+
+  .item-memo input:focus { border-color: var(--accent); }
+  .item-memo input::placeholder { color: var(--text-muted); }
+
+  /* 送信 */
+  .submit-wrap {
+    max-width: 480px;
+    margin: 4px auto 0;
+    padding: 0 16px;
+  }
+
+  .submit-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent) 0%, #e8871a 100%);
+    border: none;
+    border-radius: var(--radius);
+    color: #0f1117;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    padding: 16px;
+    transition: opacity 0.2s;
+  }
+
+  .submit-btn:disabled { opacity: 0.5; }
+
+  /* 完了画面 */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15,17,23,0.95);
+    z-index: 100;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  .overlay.show { display: flex; }
+  .overlay-icon { font-size: 60px; animation: pop .4s ease; }
+  @keyframes pop {
+    0% { transform: scale(0.5); opacity: 0; }
+    70% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .overlay-title { font-size: 20px; font-weight: 700; color: var(--A); }
+  .overlay-sub { font-size: 13px; color: var(--text-muted); }
+
+  .overlay-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'Noto Sans JP', sans-serif;
+    margin-top: 8px;
+    padding: 12px 36px;
+  }
+
+  /* 設定 */
+  .cfg-btn {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 20px;
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-bg {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 50;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .modal-bg.show { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px 16px 0 0;
+    padding: 24px 20px 40px;
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .modal h2 { font-size: 16px; margin-bottom: 6px; }
+  .modal p { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 14px; }
+
+  .modal input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 12px;
+    padding: 10px 12px;
+    font-family: monospace;
+    outline: none;
+    margin-bottom: 12px;
+  }
+
+  .modal-save {
+    width: 100%;
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    color: #0f1117;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px;
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 13px;
+    margin-top: 10px;
+    width: 100%;
+    padding: 8px;
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-en">EXCAVATOR INSPECTION REPORT</div>
+  <h1>油圧ショベル 査定書</h1>
+  <div class="header-sub" id="dateStr"></div>
+</div>
+
+<div class="body">
+
+  <!-- 基本情報 -->
+  <div class="info-card">
+    <div class="info-grid">
+      <div>
+        <div class="field-label">Model（機種名）</div>
+        <input type="text" id="model" placeholder="例：PC200-10">
+      </div>
+      <div>
+        <div class="field-label">Serial No.</div>
+        <input type="text" id="serial" placeholder="例：PC200-123456">
+      </div>
+    </div>
+    <div style="margin-top:10px">
+      <div class="field-label">Hour（稼働時間）</div>
+      <input type="number" id="hour" placeholder="例：3500（時間）">
+    </div>
+  </div>
+
+  <!-- ランク凡例 -->
+  <div style="padding: 0 4px;">
+    <div class="rank-legend">
+      <span class="la">A = 良好</span>
+      <span class="lb">B = 普通</span>
+      <span class="lc">C = 要注意</span>
+      <span class="ld">D = 要修理</span>
+    </div>
+  </div>
+
+  <!-- 外観及び操縦席 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🏗️</span>
+      <div>
+        <div class="section-title-en">Appearance & Operator Room</div>
+        <div class="section-title-jp">外観及び操縦席</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div>
+        <div class="item-label">外装・ボディ</div>
+        <div class="rank-row" data-key="appearance_body">
+          <button class="rank-btn" data-val="A" onclick="selectRank(this)">A</button>
+          <button class="rank-btn" data-val="B" onclick="selectRank(this)">B</button>
+          <button class="rank-btn" data-val="C" onclick="selectRank(this)">C</button>
+          <button class="rank-btn" data-val="D" onclick="selectRank(this)">D</button>
+        </div>
+        <div class="item-memo"><input type="text" data-memo="appearance_body" placeholder="メモ（任意）"></div>
+      </div>
+      <div>
+        <div class="item-label">操縦席・シート</div>
+        <div class="rank-row" data-key="appearance_seat">
+          <button class="rank-btn" data-val="A" onclick="selectRank(this)">A</button>
+          <button class="rank-btn" data-val="B" onclick="selectRank(this)">B</button>
+          <button class="rank-btn" data-val="C" onclick="selectRank(this)">C</button>
+          <button class="rank-btn" data-val="D" onclick="selectRank(this)">D</button>
+        </div>
+        <div class="item-memo"><input type="text" data-memo="appearance_seat" placeholder="メモ（任意）"></div>
+      </div>
+      <div>
+        <div class="item-label">ガラス・窓</div>
+        <div class="rank-row" data-key="appearance_glass">
+          <button class="rank-btn" data-val="A" onclick="selectRank(this)">A</button>
+          <button class="rank-btn" data-val="B" onclick="selectRank(this)">B</button>
+          <button class="rank-btn" data-val="C" onclick="selectRank(this)">C</button>
+          <button class="rank-btn" data-val="D" onclick="selectRank(this)">D</button>
+        </div>
+        <div class="item-memo"><input type="text" data-memo="appearance_glass" placeholder="メモ（任意）"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 装備品・付属品 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🔩</span>
+      <div>
+        <div class="section-title-en">Equipment & Attachments</div>
+        <div class="section-title-jp">装備品・付属品</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div>
+        <div class="item-label">バケット</div>
+        <div class="rank-row" data-key="equip_bucket">
+          <button class="rank-btn" data-val="A" onclick="selectRank(this)">A</button>
+          <button class="rank-btn" data-val="B" onclick="selectRank(this)">B</button>
+          <button class="rank-btn" data-val="C" onclick="selectRank(this)">C</button>
+          <button class="rank-btn" data-val="D" onclick="selectRank(this)">D</button>
+        </div>
+        <div class="item-memo"><input type="text" data-memo="equip_bucket" placeholder="メモ（任意）"></div>
+      </div>
+      <div>
+        <div class="item-label">アーム</div>
+        <div class="rank-row" data-key="equip_arm">
+          <button class="rank-btn" data-val="A" onclick="selectRank(this)">A</button>
+          <button class="rank-btn" data-val="B" onclick="selectRank(this)">B</button>
+          <button class="rank-btn" data-val="C" onclick="selectRank(this)">C</button>
+          <button class="rank-btn" data-val="D" onclick="selectRank(this)">D</button>
+        </div>
+        <div class="item-memo"><input type="text" data-memo="equip_arm" placeholder="メモ（任意）"></div>
+      </div>
+      <div>
+        <div class="item-label">ブーム</div>
+        <div class="rank-row" data-key="equip_boom">
+          <button class="rank-btn" data-val="A" onclick="selectRank(this)">A</button>
+          <button class="rank-btn" data-val="B" onclick="selectRank(this)">B</button>
+          <button class="rank-btn" data-val="C" onclick="selectRank(this)">C</button>
+          <button class="rank-btn" data-val="D" onclick="selectRank(this)">D</button>
+        </div>
+        <div class="item-memo"><input type="text" data-memo="equip_boom" placeholder="メモ（任意）"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- エンジン -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">⚙️</span>
+      <div>
+        <div class="section-title-en">Engine</div>
+        <div class="section-title-jp">エンジン</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div>
+        <div class="item-label">エンジン始動・アイドリング</div>
+        <div class="rank-row" data-key="engine_start">
+          <button class="rank-btn" data-val="A" onclick="selectRank(this)">A</button>
+          <button class="rank-btn" data-val="B" onclick="selectRank(this)">B</button>
+          <button class="rank-btn" data-val="C" onclick="selectRank(this)">C</button>
+          <button class="rank-btn" data-val="D" onclick="selectRank(this)">D</button>
+        </div>
+        <div class="item-memo"><input type="text" data-memo="engine_start" placeholder="メモ（任意）"></div>
+      </div>
+      <div>
+        <div class="item-label">排気・煙</div>
+        <div class="rank-row" data-key="engine_exhaust">
+          <button class="rank-btn" data-val="A" onclick="selectRank(this)">A</button>
+          <button class="rank-btn" data-val="B" onclick="selectRank(this)">B</button>
+          <button class="rank-btn" data-val="C" onclick="selectRank(this)">C</button>
+          <button class="rank-btn" data-val="D" onclick="selectRank(this)">D</button>
+        </div>
+        <div class="item-memo"><input type="text" data-memo="engine_exhaust" placeholder="メモ（任意）"></div>
+      </div>
+      <div>
+        <div class="item-label">エンジンオイル漏れ</div>
+        <div class="rank-row" data-key="engine_oil">
+          <button class="rank-btn" data-val="A" onclick="selectRank(this)">A</button>
+          <button class="rank-btn" data-val="B" onclick="selectRank(this)">B</button>
+          <button class="rank-btn" data-val="C" onclick="selectRank(this)">C</button>
+          <button class="rank-btn" data-val="D" onclick="selectRank(this)">D</button>
+        </div>
+        <div class="item-memo"><input type="text" data-memo="engine_oil" placeholder="メモ（任意）"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 油圧 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🔧</span>
+      <div>
+        <div class="section-title-en">Hydraulic</div>
+        <div class="section-title-jp">油圧</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div>
+        <div class="item-label">油圧ポンプ・バルブ</div>
+        <div class="rank-row" data-key="hydraulic_pump">
+          <button class="rank-btn" data-val="A" onclick="selectRank(this)">A</button>
+          <button class="rank-btn" data-val="B" onclick="selectRank(this)">B</button>
+          <button class="rank-btn" data-val="C" onclick="selectRank(this)">C</button>
+          <button class="rank-btn" data-val="D" onclick="selectRank(this)">D</button>
+        </div>
+        <div class="item-memo"><input type="text" data-memo="hydraulic_pump" placeholder="メモ（任意）"></div>
+      </div>
+      <div>
+        <div class="item-label">油圧シリンダー</div>
+        <div class="rank-row" data-key="hydraulic_cylinder">
+          <button class="rank-btn" data-val="A" onclick="selectRank(this)">A</button>
+          <button class="rank-btn" data-val="B" onclick="selectRank(this)">B</button>
+          <button class="rank-btn" data-val="C" onclick="selectRank(this)">C</button>
+          <button class="rank-btn" data-val="D" onclick="selectRank(this)">D</button>
+        </div>
+        <div class="item-memo"><input type="text" data-memo="hydraulic_cylinder" placeholder="メモ（任意）"></div>
+      </div>
+      <div>
+        <div class="item-label">油圧ホース・配管</div>
+        <div class="rank-row" data-key="hydraulic_hose">
+          <button class="rank-btn" data-val="A" onclick="selectRank(this)">A</button>
+          <button class="rank-btn" data-val="B" onclick="selectRank(this)">B</button>
+          <button class="rank-btn" data-val="C" onclick="selectRank(this)">C</button>
+          <button class="rank-btn" data-val="D" onclick="selectRank(this)">D</button>
+        </div>
+        <div class="item-memo"><input type="text" data-memo="hydraulic_hose" placeholder="メモ（任意）"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 走行及び足回り -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🦿</span>
+      <div>
+        <div class="section-title-en">Undercarriage & Running</div>
+        <div class="section-title-jp">走行及び足回り</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div>
+        <div class="item-label">クローラー・ゴムパッド</div>
+        <div class="rank-row" data-key="under_crawler">
+          <button class="rank-btn" data-val="A" onclick="selectRank(this)">A</button>
+          <button class="rank-btn" data-val="B" onclick="selectRank(this)">B</button>
+          <button class="rank-btn" data-val="C" onclick="selectRank(this)">C</button>
+          <button class="rank-btn" data-val="D" onclick="selectRank(this)">D</button>
+        </div>
+        <div class="item-memo"><input type="text" data-memo="under_crawler" placeholder="メモ（任意）"></div>
+      </div>
+      <div>
+        <div class="item-label">スプロケット・アイドラー</div>
+        <div class="rank-row" data-key="under_sprocket">
+          <button class="rank-btn" data-val="A" onclick="selectRank(this)">A</button>
+          <button class="rank-btn" data-val="B" onclick="selectRank(this)">B</button>
+          <button class="rank-btn" data-val="C" onclick="selectRank(this)">C</button>
+          <button class="rank-btn" data-val="D" onclick="selectRank(this)">D</button>
+        </div>
+        <div class="item-memo"><input type="text" data-memo="under_sprocket" placeholder="メモ（任意）"></div>
+      </div>
+      <div>
+        <div class="item-label">走行モーター</div>
+        <div class="rank-row" data-key="under_motor">
+          <button class="rank-btn" data-val="A" onclick="selectRank(this)">A</button>
+          <button class="rank-btn" data-val="B" onclick="selectRank(this)">B</button>
+          <button class="rank-btn" data-val="C" onclick="selectRank(this)">C</button>
+          <button class="rank-btn" data-val="D" onclick="selectRank(this)">D</button>
+        </div>
+        <div class="item-memo"><input type="text" data-memo="under_motor" placeholder="メモ（任意）"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 旋回台 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">🔄</span>
+      <div>
+        <div class="section-title-en">Swing</div>
+        <div class="section-title-jp">旋回台</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div>
+        <div class="item-label">旋回ベアリング</div>
+        <div class="rank-row" data-key="swing_bearing">
+          <button class="rank-btn" data-val="A" onclick="selectRank(this)">A</button>
+          <button class="rank-btn" data-val="B" onclick="selectRank(this)">B</button>
+          <button class="rank-btn" data-val="C" onclick="selectRank(this)">C</button>
+          <button class="rank-btn" data-val="D" onclick="selectRank(this)">D</button>
+        </div>
+        <div class="item-memo"><input type="text" data-memo="swing_bearing" placeholder="メモ（任意）"></div>
+      </div>
+      <div>
+        <div class="item-label">旋回モーター</div>
+        <div class="rank-row" data-key="swing_motor">
+          <button class="rank-btn" data-val="A" onclick="selectRank(this)">A</button>
+          <button class="rank-btn" data-val="B" onclick="selectRank(this)">B</button>
+          <button class="rank-btn" data-val="C" onclick="selectRank(this)">C</button>
+          <button class="rank-btn" data-val="D" onclick="selectRank(this)">D</button>
+        </div>
+        <div class="item-memo"><input type="text" data-memo="swing_motor" placeholder="メモ（任意）"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 油漏れ -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">💧</span>
+      <div>
+        <div class="section-title-en">Oil Leakage</div>
+        <div class="section-title-jp">油漏れ</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div>
+        <div class="item-label">エンジン周辺</div>
+        <div class="rank-row" data-key="oil_engine">
+          <button class="rank-btn" data-val="A" onclick="selectRank(this)">A</button>
+          <button class="rank-btn" data-val="B" onclick="selectRank(this)">B</button>
+          <button class="rank-btn" data-val="C" onclick="selectRank(this)">C</button>
+          <button class="rank-btn" data-val="D" onclick="selectRank(this)">D</button>
+        </div>
+        <div class="item-memo"><input type="text" data-memo="oil_engine" placeholder="メモ（任意）"></div>
+      </div>
+      <div>
+        <div class="item-label">油圧系統</div>
+        <div class="rank-row" data-key="oil_hydraulic">
+          <button class="rank-btn" data-val="A" onclick="selectRank(this)">A</button>
+          <button class="rank-btn" data-val="B" onclick="selectRank(this)">B</button>
+          <button class="rank-btn" data-val="C" onclick="selectRank(this)">C</button>
+          <button class="rank-btn" data-val="D" onclick="selectRank(this)">D</button>
+        </div>
+        <div class="item-memo"><input type="text" data-memo="oil_hydraulic" placeholder="メモ（任意）"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 特記事項 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-icon">📝</span>
+      <div>
+        <div class="section-title-en">Notes</div>
+        <div class="section-title-jp">特記事項</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div>
+        <textarea id="notes" placeholder="修理履歴、付属品、特記事項などを入力"></textarea>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="submit-wrap">
+  <button class="submit-btn" onclick="submitForm()">送　信</button>
+</div>
+
+<!-- 完了オーバーレイ -->
+<div class="overlay" id="overlay">
+  <div class="overlay-icon">✅</div>
+  <div class="overlay-title">送信完了！</div>
+  <div class="overlay-sub">スプレッドシートに保存されました</div>
+  <button class="overlay-btn" onclick="resetForm()">続けて入力する</button>
+</div>
+
+<!-- 設定ボタン -->
+<button class="cfg-btn" onclick="document.getElementById('cfgModal').classList.add('show')" title="送信先設定">⚙️</button>
+
+<!-- 設定モーダル -->
+<div class="modal-bg" id="cfgModal">
+  <div class="modal">
+    <h2>⚙️ 送信先URL設定</h2>
+    <p>Google Apps Script のウェブアプリURLを貼り付けてください。設定はこの端末に保存されます。</p>
+    <input type="text" id="gasUrl" placeholder="https://script.google.com/macros/s/...">
+    <button class="modal-save" onclick="saveUrl()">保存する</button>
+    <button class="modal-close" onclick="document.getElementById('cfgModal').classList.remove('show')">閉じる</button>
+  </div>
+</div>
+
+<script>
+  // 日付表示
+  const d = new Date();
+  document.getElementById('dateStr').textContent =
+    d.getFullYear() + '年' + (d.getMonth()+1) + '月' + d.getDate() + '日（' +
+    ['日','月','火','水','木','金','土'][d.getDay()] + '）';
+
+  // ランク選択
+  function selectRank(btn) {
+    const row = btn.parentElement;
+    row.querySelectorAll('.rank-btn').forEach(b => b.className = 'rank-btn');
+    btn.classList.add('sel-' + btn.dataset.val);
+  }
+
+  // GAS URL
+  const GAS_KEY = 'excavator_gas_url';
+  const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbzvg8TYLN98xjGW53qFj5deMH0xxD6Blj_T3aSP0uM5-Evx6WwEULwdeuarW5a_mUIO/exec';
+  window.addEventListener('load', () => {
+    const s = localStorage.getItem(GAS_KEY) || DEFAULT_GAS_URL;
+    document.getElementById('gasUrl').value = s;
+    if (!localStorage.getItem(GAS_KEY)) {
+      localStorage.setItem(GAS_KEY, DEFAULT_GAS_URL);
+    }
+  });
+  function saveUrl() {
+    const url = document.getElementById('gasUrl').value.trim();
+    if (url) {
+      localStorage.setItem(GAS_KEY, url);
+      document.getElementById('cfgModal').classList.remove('show');
+      alert('URLを保存しました！');
+    }
+  }
+
+  // 送信
+  async function submitForm() {
+    const model = document.getElementById('model').value.trim();
+    const serial = document.getElementById('serial').value.trim();
+    const hour = document.getElementById('hour').value.trim();
+
+    if (!model || !hour) {
+      alert('機種名と稼働時間は必須です');
+      return;
+    }
+
+    const gasUrl = localStorage.getItem(GAS_KEY) || DEFAULT_GAS_URL;
+
+    // 全ランク取得
+    const ranks = {};
+    document.querySelectorAll('.rank-row').forEach(row => {
+      const key = row.dataset.key;
+      const sel = row.querySelector('[class*="sel-"]');
+      ranks[key] = sel ? sel.dataset.val : '未選択';
+    });
+    // メモ取得
+    const memos = {};
+    document.querySelectorAll('[data-memo]').forEach(input => {
+      memos[input.dataset.memo] = input.value.trim();
+    });
+
+    const data = {
+      日時: new Date().toLocaleString('ja-JP'),
+      機種名: model,
+      シリアル: serial,
+      稼働時間: hour + 'h',
+      // 外観
+      外装ボディ: ranks.appearance_body,
+      外装ボディ_メモ: memos.appearance_body,
+      操縦席シート: ranks.appearance_seat,
+      操縦席シート_メモ: memos.appearance_seat,
+      ガラス窓: ranks.appearance_glass,
+      ガラス窓_メモ: memos.appearance_glass,
+      // 装備品
+      バケット: ranks.equip_bucket,
+      バケット_メモ: memos.equip_bucket,
+      アーム: ranks.equip_arm,
+      アーム_メモ: memos.equip_arm,
+      ブーム: ranks.equip_boom,
+      ブーム_メモ: memos.equip_boom,
+      // エンジン
+      エンジン始動: ranks.engine_start,
+      エンジン始動_メモ: memos.engine_start,
+      排気煙: ranks.engine_exhaust,
+      排気煙_メモ: memos.engine_exhaust,
+      エンジンオイル漏れ: ranks.engine_oil,
+      エンジンオイル漏れ_メモ: memos.engine_oil,
+      // 油圧
+      油圧ポンプ: ranks.hydraulic_pump,
+      油圧ポンプ_メモ: memos.hydraulic_pump,
+      油圧シリンダー: ranks.hydraulic_cylinder,
+      油圧シリンダー_メモ: memos.hydraulic_cylinder,
+      油圧ホース: ranks.hydraulic_hose,
+      油圧ホース_メモ: memos.hydraulic_hose,
+      // 足回り
+      クローラー: ranks.under_crawler,
+      クローラー_メモ: memos.under_crawler,
+      スプロケット: ranks.under_sprocket,
+      スプロケット_メモ: memos.under_sprocket,
+      走行モーター: ranks.under_motor,
+      走行モーター_メモ: memos.under_motor,
+      // 旋回台
+      旋回ベアリング: ranks.swing_bearing,
+      旋回ベアリング_メモ: memos.swing_bearing,
+      旋回モーター: ranks.swing_motor,
+      旋回モーター_メモ: memos.swing_motor,
+      // 油漏れ
+      油漏れ_エンジン: ranks.oil_engine,
+      油漏れ_エンジン_メモ: memos.oil_engine,
+      油漏れ_油圧: ranks.oil_hydraulic,
+      油漏れ_油圧_メモ: memos.oil_hydraulic,
+      // 特記事項
+      特記事項: document.getElementById('notes').value
+    };
+
+    const btn = document.querySelector('.submit-btn');
+    btn.disabled = true;
+    btn.textContent = '送信中...';
+
+    try {
+      await fetch(gasUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      document.getElementById('overlay').classList.add('show');
+    } catch (e) {
+      alert('送信失敗。URLを確認してください。');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '送　信';
+    }
+  }
+
+  // リセット
+  function resetForm() {
+    ['model','serial','hour','notes'].forEach(id => document.getElementById(id).value = '');
+    document.querySelectorAll('.rank-btn').forEach(b => b.className = 'rank-btn');
+    document.querySelectorAll('[data-memo]').forEach(i => i.value = '');
+    document.getElementById('overlay').classList.remove('show');
+    window.scrollTo(0, 0);
+  }
+</script>
+</body>
+</html>
